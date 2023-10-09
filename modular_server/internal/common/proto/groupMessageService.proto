@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package proto;
+import "model.proto";
+import "google/api/annotations.proto";
+
+option go_package = ".;pb";
+
+message SendGroupMessageRequest {
+  Message message = 1;
+}
+
+message SendGroupMessageResponse{
+  bool error =  1;
+  oneof data {
+    Message message = 2;
+    string msg = 3;
+  }
+}
+
+message GetGroupMessageRequest {
+  string groupID = 1;
+  string clientID = 2;
+  int64 offset = 3;
+  int64 limit = 4;
+}
+
+message GetGroupMessageResponse {
+  bool error = 1;
+  string msg = 2;
+  repeated Message messages = 3;
+}
+
+service GroupMessageService {
+  rpc SendGroupMessage(SendGroupMessageRequest) returns (SendGroupMessageResponse){
+    option (google.api.http) = {
+      post : "/api/v1/groupmessage"
+      body: "*"
+    };
+  };
+  rpc GetGroupMessage(GetGroupMessageRequest) returns (GetGroupMessageResponse){
+    option (google.api.http) = {
+      get: "/api/v1/groupmessage"
+    };
+  };
+}

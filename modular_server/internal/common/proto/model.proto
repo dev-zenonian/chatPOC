@@ -1,0 +1,25 @@
+syntax = "proto3";
+package proto;
+
+option go_package = ".;pb";
+
+message Message {
+  string MessageID = 1;
+  string FromID = 2;
+  string ToID = 3;
+  string MessageType = 4;
+  string Content = 5;
+  string GroupID = 6;
+  int64 Timestamp = 7;
+}
+
+message GroupInformation {
+  string group_id = 1;
+  string group_name = 2;
+  repeated string clientIDs = 3;
+}
+
+message HandlerInformation{
+  string HandlerID  = 2;
+  string HandlerAddress  = 3;
+}

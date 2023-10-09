@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package proto;
+import "model.proto";
+import "google/api/annotations.proto";
+
+option go_package = ".;pb";
+
+message SendMessageRequest {
+  string FromID = 1;
+  string ToID = 2;
+  string MessageType = 3;
+  string Content = 4;
+}
+
+message SendMessageResponse{
+  bool error =  1;
+  oneof data {
+    Message message = 2;
+    string msg = 3;
+  }
+}
+
+enum Status {
+  Deliveried = 0;
+  Received = 1;
+  Seen = 2;
+}
+
+message GetMessageWithStatusRequest{
+  string ClientID = 1;
+  Status Status = 2;
+  int64 offset = 3;
+  int64 limit = 4;
+}
+
+message GetMessageWithStatusResponse{
+  bool error = 1;
+  string msg = 2;
+  repeated Message messages = 3;
+}
+
+service MessageService {
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse){
+    option (google.api.http) = {
+      post: "/api/v1/message"
+      body: "*"
+    };
+  };
+  rpc GetMessageWithStatus(GetMessageWithStatusRequest) returns (GetMessageWithStatusResponse){
+    option (google.api.http) = {
+      get: "/api/v1/message"
+    };
+  };
+}

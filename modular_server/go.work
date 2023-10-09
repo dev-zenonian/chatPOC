@@ -1,0 +1,14 @@
+go 1.20
+
+use (
+	./internal/common
+	./internal/distributorService
+	./internal/groupMessageService
+	./internal/groupService
+	./internal/messageService
+	./internal/mock
+	./internal/sessionService
+	./internal/userService
+	./internal/wsService
+	./tools
+)

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package proto;
+import "model.proto";
+
+option go_package = ".;pb";
+
+message RegisterClientRequest {
+  string ClientID  =  1;
+  HandlerInformation handler = 2;
+}
+
+message RegisterClientResponse {
+  bool error = 1;
+  string data = 2;
+}
+
+message UnRegisterClientRequest {
+  string ClientID  = 1;
+  string HandlerID  =  2;
+  string HandlerAddress  = 3;
+}
+
+message UnRegisterClientResponse {
+  bool error = 1;
+  string data = 2;
+}
+
+message GetWSHandlerWithClientIDsRequest{
+  string clientID = 1;
+}
+
+message GetWSHandlerWithClientIDsResponse{
+  bool error = 1;
+  string msg = 2;
+  repeated HandlerInformation handlers = 3;
+}
+
+service SessionService {
+  rpc RegisterClient(RegisterClientRequest) returns (RegisterClientResponse);
+  rpc UnRegisterClient(UnRegisterClientRequest) returns (UnRegisterClientResponse);
+  rpc GetWSHandlerWithClientID(GetWSHandlerWithClientIDsRequest) returns (GetWSHandlerWithClientIDsResponse);
+}

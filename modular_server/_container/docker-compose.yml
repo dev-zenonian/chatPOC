@@ -1,0 +1,112 @@
+version: "3"
+services:
+  redis:
+    image: redis/redis-stack:latest
+    container_name: zenchatrd
+    # volumes:
+    #   - $PWD/_volumes/redis:/var/lib/redis/
+    env_file:
+      - .env
+    # environment:
+    restart: always
+    ports:
+      - 10001:6379
+      - 13333:8001
+    networks:
+      - zenchat-net
+
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:latest
+  #   container_name: zenchatzk
+  #   volumes:
+  #     - $PWD/_volumes/zookeeper:/var/lib/zookeeper/
+  #   env_file:
+  #     - .env
+  #   restart: always
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+  #     ZOOKEEPER_TICK_TIME: ${ZOOKEEPER_TICK_TIME}
+  #   networks:
+  #     - zenchat-net
+  #   ports:
+  #     - 22181:2181
+  #
+  # kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   container_name: zenchatkafka
+  #   depends_on:
+  #     - zookeeper
+  #   networks:
+  #     - zenchat-net
+  #   ports:
+  #     - 29092:29092
+  #     - 9092:9092
+  #   expose:
+  #     - 29092
+  #     - 9092
+  #   volumes:
+  #     - $PWD/_volumes/kafka:/var/lib/kafka
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
+  #     KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+  #     KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME}
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  # init-kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   depends_on:
+  #     - kafka
+  #   entrypoint: ["/bin/sh", "-c"]
+  #   networks:
+  #     - zenchat-net
+  #   command: |
+  #     "
+  #     # blocks until kafka is reachable
+  #     kafka-topics --bootstrap-server kafka:9092 --list
+  #
+  #     echo -e 'Creating kafka topics'
+  #     kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic notification --replication-factor 1 --partitions 1
+  #
+  #     echo -e 'All current kafka topics:'
+  #     kafka-topics --bootstrap-server kafka:9092 --list
+  #     "
+  # kafka-ui:
+  #   image: provectuslabs/kafka-ui
+  #   container_name: kafka-ui
+  #   ports:
+  #     - 8002:8080
+  #   restart: always
+  #   networks:
+  #     - zenchat-net
+  #   environment:
+  #     - KAFKA_CLUSTERS_0_NAME=local
+  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+  #     - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:22181
+  #     - SPRING_SECURITY_USER_NAME=root
+  #     - SPRING_SECURITY_USER_PASSWORD=secret
+  #     - AUTH_TYPE=LOGIN_FORM
+  #
+  mongoDB:
+    image: mongo:4.2
+    container_name: zenchatdb
+    ports:
+      - "27019:27017"
+    networks:
+      - zenchat-net
+    volumes:
+      - $PWD/_volumes/mongodb:/data/db
+      - $PWD/mongoinit/:/docker-entrypoint-initdb.d/
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+networks:
+  zenchat-net:
+    driver: bridge
