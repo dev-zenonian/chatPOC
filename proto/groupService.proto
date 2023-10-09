@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package proto;
+import "model.proto";
+import "google/api/annotations.proto";
+
+option go_package = ".;pb";
+
+message GetGroupWithIDRequest {
+  string group_id = 1;
+}
+
+message GetGroupWithIDResponse{
+  bool error =  1;
+  oneof data{
+    GroupInformation group = 2;
+    string msg = 3;
+  } 
+}
+message CreateGroupRequest{
+  string group_name = 1;
+  repeated string clientIDs = 2;
+  string adminID = 3;
+  bool isPrivate = 4;
+}
+
+message CreateGroupResponse{
+  bool error = 1;
+  oneof data{
+    GroupInformation group = 2;
+    string msg = 3;
+  }
+}
+
+message DeleteGroupRequest{
+  string groupID = 1;
+  string adminID = 2;
+}
+
+message DeleteGroupResponse{
+  bool error = 1;
+  string data = 2;
+}
+
+service GroupService {
+  rpc GetGroupWithID(GetGroupWithIDRequest) returns (GetGroupWithIDResponse){
+    option (google.api.http) = {
+      get: "/api/v1/group"
+    };
+  };
+  rpc CreateGroup(CreateGroupRequest) returns(CreateGroupResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/group"
+      body: "*"
+    };
+  };
+  rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse){
+    option (google.api.http) = {
+      delete: "/api/v1/group"
+    };
+  };
+}

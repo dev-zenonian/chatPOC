@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto;
+import "model.proto";
+
+option go_package = ".;pb";
+
+message DistributeMessageRequest {
+  Message message = 1;
+}
+
+message DistributeMessageResponse{
+  bool error =  1;
+  oneof data {
+    Message message = 2;
+    string msg = 3;
+  }
+}
+
+service MessageDistributor {
+  rpc DistributeMessage(DistributeMessageRequest) returns (DistributeMessageResponse);
+}
